@@ -79,7 +79,7 @@ public class IntegrationJPATest {
 
         accountRepository.delete(account);
 
-        assertThrows(NoSuchElementException.class, () -> accountRepository.findByPerson("John"));
+        assertThrows(NoSuchElementException.class, () -> accountRepository.findByPerson("John").orElseThrow());
 
         assertEquals(1, accountRepository.findAll().size());
     }
