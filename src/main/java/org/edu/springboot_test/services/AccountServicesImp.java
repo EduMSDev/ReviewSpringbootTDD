@@ -4,13 +4,15 @@ import org.edu.springboot_test.models.Account;
 import org.edu.springboot_test.models.Bank;
 import org.edu.springboot_test.repositories.AccountRepository;
 import org.edu.springboot_test.repositories.BankRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-public class AccountServicesImp implements AccountServices{
+@Service
+public class AccountServicesImp implements AccountServices {
 
-    private AccountRepository accountRepository;
-    private BankRepository bankRepository;
+    private final AccountRepository accountRepository;
+    private final BankRepository bankRepository;
 
     public AccountServicesImp(AccountRepository accountRepository, BankRepository bankRepository) {
         this.accountRepository = accountRepository;
@@ -35,22 +37,18 @@ public class AccountServicesImp implements AccountServices{
     }
 
     @Override
-    public void transfer(Long numOriginAccount, Long numDestinyAccount, BigDecimal amount) {
-        Bank bank = bankRepository.findById(1L);
-        int totalTransfers = bank.getTotalTransfers();
-        bank.setTotalTransfers(++totalTransfers);
-        bankRepository.update(bank);
-
+    public void transfer(Long numOriginAccount, Long numDestinyAccount, BigDecimal amount, Long bankId) {
         Account accountOrigin = accountRepository.findById(numOriginAccount);
         accountOrigin.debit(amount);
         accountRepository.update(accountOrigin);
 
         Account destinyAccount = accountRepository.findById(numDestinyAccount);
-        destinyAccount.debit(amount);
+        destinyAccount.credit(amount);
         accountRepository.update(destinyAccount);
 
-
-
-
+        Bank bank = bankRepository.findById(bankId);
+        int totalTransfers = bank.getTotalTransfers();
+        bank.setTotalTransfers(++totalTransfers);
+        bankRepository.update(bank);
     }
 }

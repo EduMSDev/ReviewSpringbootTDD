@@ -1,6 +1,5 @@
 package org.edu.springboot_test.repositories;
 
-import org.edu.springboot_test.models.Account;
 import org.edu.springboot_test.models.Bank;
 
 import java.util.List;

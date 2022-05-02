@@ -2,10 +2,16 @@ package org.edu.springboot_test.models;
 
 import org.edu.springboot_test.exceptions.NotEnoughMoneyException;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
+@Table(name = "accounts")
 public class Account {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String person;
     private BigDecimal balance;
@@ -45,7 +51,7 @@ public class Account {
 
     public void debit(BigDecimal amount) {
         BigDecimal newBalance = this.balance.subtract(amount);
-        if (newBalance.compareTo(BigDecimal.ZERO)< 0) {
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
             throw new NotEnoughMoneyException("Not Enough Money!!");
         }
         this.balance = newBalance;

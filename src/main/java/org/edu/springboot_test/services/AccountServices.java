@@ -4,6 +4,7 @@ import org.edu.springboot_test.models.Account;
 
 import java.math.BigDecimal;
 
+
 public interface AccountServices {
     Account findById(Long id);
 
@@ -11,6 +12,6 @@ public interface AccountServices {
 
     BigDecimal checkBalance(Long accountId);
 
-    void transfer(Long numOriginAccount, Long numDestinyAccount, BigDecimal amount);
+    void transfer(Long numOriginAccount, Long numDestinyAccount, BigDecimal amount, Long bankId);
 
 }
