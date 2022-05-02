@@ -1,3 +1,3 @@
-INSERT INTO accounts(person, balance) values ("Andres", 1000);
-INSERT INTO accounts(person, balance) values ("john", 2000);
-INSERT INTO BANK (name, total_transfers) values ("El banco financiero", 0)
+INSERT INTO accounts (person, balance) VALUES ('Andres', 1000);
+INSERT INTO accounts (person, balance) VALUES ('John', 2000);
+INSERT INTO banks (name, total_transfers) VALUES ('El banco financiero', 0);
