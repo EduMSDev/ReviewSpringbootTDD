@@ -2,7 +2,7 @@ package org.edu.springboot_test.controller;
 
 import org.edu.springboot_test.models.Account;
 import org.edu.springboot_test.models.TransactionDTO;
-import org.edu.springboot_test.services.AccountServices;
+import org.edu.springboot_test.services.AccountServicesImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,7 +18,20 @@ import java.util.Map;
 public class AccountController {
 
     @Autowired
-    private AccountServices accountServices;
+    private AccountServicesImp accountServices;
+
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Account> list() {
+        return accountServices.findAll();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Account save(@RequestBody Account account) {
+        return accountServices.save(account);
+    }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

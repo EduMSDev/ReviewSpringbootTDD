@@ -5,13 +5,15 @@ import org.edu.springboot_test.models.Account;
 import org.edu.springboot_test.models.Bank;
 import org.edu.springboot_test.repositories.AccountRepository;
 import org.edu.springboot_test.repositories.BankRepository;
-import org.edu.springboot_test.services.AccountServices;
+import org.edu.springboot_test.services.AccountServicesImp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.edu.springboot_test.Data.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +28,7 @@ class SpringbootTestApplicationTests {
     BankRepository bankRepository;
 
     @Autowired
-    AccountServices accountServices;
+    AccountServicesImp accountServices;
 
     @Test
     void contextLoads() {
@@ -105,6 +107,40 @@ class SpringbootTestApplicationTests {
         assertTrue(account1 == account2);
         assertEquals("Andres", account1.getPerson());
         assertEquals("Andres", account2.getPerson());
+    }
+
+    @Test
+    void findAllTest() {
+        List<Account> datas = Arrays.asList(createAccount001().orElseThrow(), createAccount002().orElseThrow());
+        when(accountRepository.findAll()).thenReturn(datas);
+
+        List<Account> accounts = accountServices.findAll();
+
+        assertFalse(accounts.isEmpty());
+        assertEquals(2, accounts.size());
+        assertTrue(accounts.contains(createAccount002().orElseThrow()));
+
+        verify(accountRepository).findAll();
+    }
+
+
+    @Test
+    void saveTest() {
+        Account accountPepe = new Account(null, "Pepe", new BigDecimal("3000"));
+
+        when(accountRepository.save(any())).then(invocation -> {
+            Account c = invocation.getArgument(0);
+            c.setId(3L);
+            return c;
+        });
+
+        Account account = accountServices.save(accountPepe);
+
+        assertEquals("Pepe", accountPepe.getPerson());
+        assertEquals(3, accountPepe.getId());
+        assertEquals("3000", accountPepe.getBalance().toPlainString());
+
+        verify(accountRepository).save(any());
 
     }
 }

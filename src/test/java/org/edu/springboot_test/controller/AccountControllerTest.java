@@ -1,8 +1,9 @@
 package org.edu.springboot_test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.edu.springboot_test.models.Account;
 import org.edu.springboot_test.models.TransactionDTO;
-import org.edu.springboot_test.services.AccountServices;
+import org.edu.springboot_test.services.AccountServicesImp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,10 +13,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.edu.springboot_test.Data.createAccount001;
+import static org.edu.springboot_test.Data.createAccount002;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,7 +37,7 @@ class AccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private AccountServices accountServices;
+    private AccountServicesImp accountServices;
 
     @Test
     void detailTest() throws Exception {
@@ -65,5 +72,37 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.message").value("transfer success!"))
                 .andExpect(jsonPath("$.transaction.originAccountDTO").value(transactionDTO.getOriginAccountDTO()))
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    void listTest() throws Exception {
+        List<Account> accounts = Arrays.asList(createAccount001().orElseThrow(), createAccount002().orElseThrow());
+        when(accountServices.findAll()).thenReturn(accounts);
+
+        mockMvc.perform(get("/api/accounts").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].person").value("Andres"))
+                .andExpect(jsonPath("$[0].balance").value("1000"))
+                .andExpect(jsonPath("$[1].person").value("John"))
+                .andExpect(jsonPath("$[1].balance").value("2000"))
+                .andExpect(jsonPath("$").value(hasSize(2)))
+                .andExpect(content().json(objectMapper.writeValueAsString(accounts)));
+        verify(accountServices).findAll();
+    }
+
+    @Test
+    void saveTest() throws Exception {
+        Account account = new Account(null, "Pepe", new BigDecimal("3000"));
+        when(accountServices.save(any())).then(invocation -> {
+            Account c = invocation.getArgument(0);
+            c.setId(3L);
+            return c;
+        });
+
+        mockMvc.perform(post("/api/accounts").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(account)))
+                .andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(3))).andExpect(jsonPath("$.person", is("Pepe")))
+                .andExpect(jsonPath("$.balance", is(3000)));
+        verify(accountServices).save(any());
     }
 }
