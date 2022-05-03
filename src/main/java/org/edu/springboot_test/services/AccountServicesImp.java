@@ -67,4 +67,10 @@ public class AccountServicesImp implements AccountServices {
         bank.setTotalTransfers(++totalTransfers);
         bankRepository.save(bank);
     }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        accountRepository.deleteById(id);
+    }
 }

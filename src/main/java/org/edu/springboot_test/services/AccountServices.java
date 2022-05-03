@@ -20,4 +20,6 @@ public interface AccountServices {
 
     void transfer(Long numOriginAccount, Long numDestinyAccount, BigDecimal amount, Long bankId);
 
+    void deleteById(Long id);
+
 }
